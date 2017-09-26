@@ -10,6 +10,13 @@ var users = require('./routes/users');
 
 var app = express();
 
+var redis = require('redis');
+var client = redis.createClient(10.128.26.74);
+client.on('ready',function(res){
+    console.log("ready");
+});
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
