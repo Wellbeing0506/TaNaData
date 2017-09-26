@@ -1,6 +1,6 @@
 {
   "name": "tanadataweb",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node server.js"
@@ -13,5 +13,20 @@
     "express": "~4.15.2",
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2"
-  }
+  },
+  "description": "TaNaData",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wellbeing0506/TaNaData.git"
+  },
+  "keywords": [
+    "opensfhit"
+  ],
+  "author": "Dave",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wellbeing0506/TaNaData/issues"
+  },
+  "homepage": "https://github.com/Wellbeing0506/TaNaData#readme"
 }

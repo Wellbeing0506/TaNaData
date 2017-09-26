@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('./app');
 var debug = require('debug')('tanadataweb:server');
 var http = require('http');
 
@@ -12,7 +12,8 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '80');
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+		ip = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 app.set('port', port);
 
 /**
@@ -25,7 +26,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port,ip);
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -82,7 +83,8 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
+//  var addr = server.address();
+	var addr = ip;
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
