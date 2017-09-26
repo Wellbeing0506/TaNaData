@@ -11,7 +11,7 @@ var users = require('./routes/users');
 var app = express();
 
 var redis = require('redis');
-var client = redis.createClient(10.128.26.74,{auth_pass:"1rjDri7HvNb5A1XA"});
+var client = redis.createClient(6379,10.128.26.74,{auth_pass:"1rjDri7HvNb5A1XA"});
 client.on('ready',function(res){
     console.log("ready");
 });
