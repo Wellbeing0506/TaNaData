@@ -6,10 +6,6 @@
     "start": "node server.js"
   },
   "dependencies": {
-		"chai": "^3.5.0",
-		"chai-http": "^2.0.1",
-		"mocha": "^2.4.5",
-		"mongodb": "^2.1.16",
 		"tracer":"^0.8.9",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
