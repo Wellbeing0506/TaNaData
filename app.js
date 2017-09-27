@@ -5,15 +5,23 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var Config = require('./config/sysConfig');
+		config = new Config();
+var log = require('tracer').colorConsole();
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
 
+log.info("[SYS]ENV:",process.env.NODE_ENV);
+
 var redis = require('redis');
-var client = redis.createClient(6379,"10.128.26.74",{auth_pass:"1rjDri7HvNb5A1XA"});
+var client = redis.createClient(config.redis.port,config.redis.ip,config.redis.option);
 client.on('ready',function(res){
-    console.log("ready");
+	log.info("[SYS]Redis:","connecting");
+});
+client.on('error',function(err){
+	log.error("[SYS]Redis:",err);
 });
 
 

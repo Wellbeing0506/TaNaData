@@ -3,7 +3,10 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: '智工網' });
+	res.render('index.ejs',{});
 });
+
+
+
 
 module.exports = router;
