@@ -20,7 +20,7 @@
     "tracer": "^0.8.11"
   },
   "description": "TaNaData",
-  "main": "server.js",
+  "main": "ecosystem.config.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Wellbeing0506/TaNaData.git"
