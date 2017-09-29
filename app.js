@@ -13,7 +13,7 @@ var users = require('./routes/users');
 
 var app = express();
 
-log.info("[SYS]ENV:",process.env.NODE_ENV);
+log.info("[SYS]ENV:",process.env.NODE_ENV,config);
 
 var redis = require('redis');
 var client = redis.createClient(config.redis.port,config.redis.ip,config.redis.option);
