@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node_modules/pm2/bin/pm2 start ecosystem.config.js --env production",
-    "dev": "node_modules/pm2/bin/pm2 start ecosystem.config.js --env development"
+    "start": "NODE_ENV=production node server.js",
+    "dev": "NODE_ENV=development node server.js"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
@@ -14,13 +14,12 @@
     "express": "~4.15.2",
     "morgan": "~1.8.1",
     "passport": "^0.4.0",
-    "pm2": "^2.7.1",
     "redis": "^2.8.0",
     "serve-favicon": "^2.4.3",
     "tracer": "^0.8.11"
   },
   "description": "TaNaData",
-  "main": "ecosystem.config.js",
+  "main": "server.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Wellbeing0506/TaNaData.git"
