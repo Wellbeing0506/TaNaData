@@ -9,9 +9,9 @@ module.exports = function(){
 			}};
 	} else {
 			return {redis : {
-				ip : "10.128.26.74",
+				ip : "172.30.115.242",
 				port : 6379,
-				option : {auth_pass:"1rjDri7HvNb5A1XA"},
+				option : {auth_pass:'qwe123QWE!@#'},
 				keyHead : "ZhiGong"
 			}};
 	}
