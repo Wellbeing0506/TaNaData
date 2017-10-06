@@ -8,7 +8,16 @@ var bodyParser = require('body-parser');
 var Config = require('./config/sysConfig');
 		config = new Config();
 var log = require('tracer').colorConsole();
+
 var index = require('./routes/index');
+
+var crypto = require('crypto');
+var flash = require('connect-flash');
+var Passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var session = require('express-session');
+var helmet = require('helmet');
+var moment = require('moment');
 
 var app = express();
 
@@ -35,6 +44,59 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('combined', {skip: function (req, res) { return res.statusCode < 400 }}));
+
+app.use(session({
+  secret : 'davetest',
+  name : 'sessionId',
+  httpOnly : true,
+  resave : false,
+  saveUninitialized : false
+}));
+app.use(Passport.initialize());
+app.use(Passport.session());
+app.use(flash());
+app.use(function(req,res,next){
+  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  if(req.method === "POST" && req.url==="/"){
+    if(req.body.remember === "yes") {
+      req.session.cookie.maxAge = 30*24*60*60*1000;
+    } else {
+      req.session.cookie.expires = false;
+    }
+  }
+  next();
+});
+
+Passport.serializeUser(function(user, done) {
+      done(null, user);
+      });
+Passport.deserializeUser(function(user, done) {
+      done(null, user);
+      });
+
+Passport.use('local-login',
+    new LocalStrategy({
+      usernameField : 'username',
+      passwordField : 'password',
+      passReqToCallback : true
+    },function(req,username,password,done){
+      client.hgetall(config.redis.keyHead+"_User_"+req.body.username,function(err,result){
+          console.log(result);
+          if(!result){
+            return done(null,false,req.flash('LoginMessage',"no User"));
+          } else {
+            console.log("ok");
+            if(req.body.password===result.password) {
+              return done(null,req.body.username);
+            } else {
+              return done(null,false,req.flash('LoginMessage',"password Fail"));
+            }
+          }
+      });
+    })
+);
+
 
 app.use('/', index);
 
