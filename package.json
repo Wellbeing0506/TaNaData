@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "NODE_ENV=production node server.js",
-    "dev": "NODE_ENV=development node server.js"
+    "dev": "NODE_ENV=development node server.js",
+    "mac": "NODE_ENV=devmac node server.js"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
