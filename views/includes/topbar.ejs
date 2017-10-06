@@ -5,23 +5,9 @@
 			<br>
 			<h5>智工網</h5>
 			<div class="row small-up-2 medium-up-3 large-up-4">
-				<a href="#">电子工程</a>
-				<a href="#">机器人</a>
-				<a href="#">人工智能</a>
-				<a href="#">激光</a>
-				<a href="#">可穿戴设备</a>
-				<a href="#">3D打印</a>
-				<a href="#">汽车科技</a>
-				<a href="#">智能硬件</a>
-				<a href="#">智能家居</a>
-				<a href="#">仪表仪器</a>
-				<a href="#">物联网</a>
-				<a href="#">云计算</a>
-				<a href="#">VR</a>
-				<a href="#">新能源汽车</a>
-				<a href="#">医疗科技</a>
-				<a href="#">传感器</a>
-				<a href="#">半导体</a>
+        <% for (var i in nameList) { %>
+          <a href="/page/<%= i %>"><%= nameList[i] %></a></li>
+        <% } %>
 			</div>
 		</div>
 	</div>
@@ -41,23 +27,9 @@
         <li>
           <a href="#"><img class="svg" src="/images/fi-database.svg" data-open="my-info" style="height:25px;width:25px"></img>教学分类</a>
           <ul class="menu">
-            <li><a href="#">电子工程</a></li>
-            <li><a href="#">机器人</a></li>
-						<li><a href="#">人工智能</a></li>
-						<li><a href="#">激光</a></li>
-						<li><a href="#">可穿戴设备</a></li>
-						<li><a href="#">3D打印</a></li>
-						<li><a href="#">汽车科技</a></li>
-						<li><a href="#">智能硬件</a></li>
-						<li><a href="#">智能家居</a></li>
-						<li><a href="#">仪表仪器</a></li>
-						<li><a href="#">物联网</a></li>
-						<li><a href="#">云计算</a></li>
-						<li><a href="#">VR</a></li>
-						<li><a href="#">新能源汽车</a></li>
-						<li><a href="#">医疗科技</a></li>
-						<li><a href="#">传感器</a></li>
-						<li><a href="#">半导体</a></li>
+            <% for (var i in nameList) { %>
+              <li><a href="/page/<%= i %>"><%= nameList[i] %></a></li>
+            <% } %>
           </ul>
         </li>
         <li><a href="#">其他功能</a></li>
@@ -69,7 +41,7 @@
 <% if(user==="") { %>
 		    <li><a href="/login"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img>Login</a></li>
 <% } else { %>
-		    <li><a href="/login"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img><%= user %></a></li>
+		    <li><a href="/profile"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img><%= user %></a></li>
 <% } %>
 
         <li><input type="search" placeholder="Search"></li>
