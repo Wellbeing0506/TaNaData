@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
 
 /* login page */
 router.get('/login',function(req,res,next) {
-  res.render('login.ejs',{message:req.flash('LoginMessage'),user:"",nameList:nameList});
+      res.render('login.ejs',{message:req.flash('LoginMessage'),nameList:nameList,user:""});
 });
 router.post('/login',
     Passport.authenticate('local-login',{
@@ -42,5 +42,18 @@ router.get('/captcha.png',function(req,res){
 	});
 	res.end(imgbase64);
 });
+
+/* logout */ 
+router.get('/logout',function(req,res){
+  req.logout();
+  console.log(req);
+  res.redirect('/login');
+});
+/* isLoggedIn function */
+function isLoggedIn(req,res,next){
+  if(req.isAuthenticated())
+    return next();
+  res.redirect('/login');
+}
 
 module.exports = router;

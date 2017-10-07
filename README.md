@@ -22,8 +22,12 @@ npm run mac
 
 ### Dev Document 
 1. Redis Key Namespace 
+  - ZhiGongNet_Users : Set Type 
+```javascript
+['admin','test',...]
+```
   - ZhiGongNet_User_{NAME} : Hash Type
-```json
+```javascript
 { 
   username:"UserName", 
   password:"UserPasswordWithSaltHash", 
@@ -36,11 +40,11 @@ npm run mac
 }
 ```
   - ZhiGongNet_Category_{Category} : Set Type
-```json
+```javascript
 ['videoID1','videoID2',...]
 ```
   - ZhiGongNet_Video_{videoID1} : Hash Type
-```json
+```Javascript
 {
   title : "videoTitle",
   description : "videoDescription",
