@@ -2,6 +2,7 @@ var express = require('express');
 var nameList = require('../config/nameList.js');
 var router = express.Router();
 var Passport = require('passport');
+var captchapng = require('captchapng');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -13,6 +14,8 @@ router.get('/', function(req, res, next) {
   }
 });
 
+
+/* login page */
 router.get('/login',function(req,res,next) {
   res.render('login.ejs',{message:req.flash('LoginMessage'),user:"",nameList:nameList});
 });
@@ -24,5 +27,20 @@ router.post('/login',
     })
 );
 
+/* validation png */ 
+router.get('/captcha.png',function(req,res){
+	var vcode = parseInt(Math.random()*9000+1000);
+	req.session.checkcode = vcode;
+	var p = new captchapng(66,20,vcode);
+	p.color(99,109,129,168);
+	p.color(80,80,80,255);
+	var img = p.getBase64();
+	var imgbase64 = new Buffer(img,'base64');
+	console.log("vcode",req.session.checkcode,vcode);
+	res.writeHead(200,{
+		'Content-Type' : 'image/png'
+	});
+	res.end(imgbase64);
+});
 
 module.exports = router;

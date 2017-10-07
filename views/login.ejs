@@ -22,12 +22,13 @@
 <form action="/login" method="POST">
   <h4 class="text-center"></h4>
   <label>
-    account <input type="text" placeholder="账号" name="username">
+    account <input type="text" placeholder="username" name="username">
   </label>
   <label>
-    password<input type="password" placeholder="密码" name="password">
+    password<input type="password" placeholder="password" name="password">
   </label>
-  <input type="checkbox" name="remember" value="yes">记住我
+	Verification Code : <img src="/captcha.png"/><input type="text" placeholder="" name="vcode">
+  <input type="checkbox" name="remember" value="yes">Remember Me
   <br>
   <button type="submit" class="button expanded">Login</button>
 </form>

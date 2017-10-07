@@ -69,32 +69,37 @@ app.use(function(req,res,next){
 });
 
 Passport.serializeUser(function(user, done) {
-      done(null, user);
-      });
+	console.log("here",user);
+	done(null, user);
+});
 Passport.deserializeUser(function(user, done) {
-      done(null, user);
-      });
+	console.log("there",user);
+	done(null, user);
+});
 
 Passport.use('local-login',
-    new LocalStrategy({
-      usernameField : 'username',
-      passwordField : 'password',
-      passReqToCallback : true
-    },function(req,username,password,done){
-      client.hgetall(config.redis.keyHead+"_User_"+req.body.username,function(err,result){
-          console.log(result);
-          if(!result){
-            return done(null,false,req.flash('LoginMessage',"no User"));
-          } else {
-            console.log("ok");
-            if(req.body.password===result.password) {
-              return done(null,req.body.username);
-            } else {
-              return done(null,false,req.flash('LoginMessage',"password Fail"));
-            }
-          }
-      });
-    })
+  new LocalStrategy({
+    usernameField : 'username',
+    passwordField : 'password',
+    passReqToCallback : true
+  },function(req,username,password,done){
+    client.hgetall(config.redis.keyHead+"_User_"+req.body.username,function(err,result){
+      if(!result){
+        return done(null,false,req.flash('LoginMessage',"User not found"));
+      } else {
+				if(req.session.checkcode === parseInt(req.body.vcode)) {
+					var pass = crypto.createHash('sha1').update(result.salt+password).digest('hex');
+					if(result.password === pass) {
+						return done(null,{username:username,role:result.role});
+					} else {
+        		return done(null,false,req.flash('LoginMessage',"Password Wrong!"));
+					}
+				} else {
+        	return done(null,false,req.flash('LoginMessage',"Vcode Wrong!"));
+				}
+      }
+    });
+  })
 );
 
 

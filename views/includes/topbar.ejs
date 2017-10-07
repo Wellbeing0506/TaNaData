@@ -33,7 +33,9 @@
           </ul>
         </li>
         <li><a href="#">其他功能</a></li>
+				<% if(user.role === "admin") { %>
         <li><a href="#">管理后台</a></li>
+				<% } %>
       </ul>
     </div>
     <div class="top-bar-right">
@@ -41,11 +43,11 @@
 <% if(user==="") { %>
 		    <li><a href="/login"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img>Login</a></li>
 <% } else { %>
-		    <li><a href="/profile"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img><%= user %></a></li>
+		    <li><a href="/profile"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img><%= user.username %></a></li>
 <% } %>
 
-        <li><input type="search" placeholder="Search"></li>
-        <li><button type="button" class="button">Search</button></li>
+        <!--li><input type="search" placeholder="Search"></li>
+        <li><button type="button" class="button">Search</button></li--!>
       </ul>
     </div>
   </div>

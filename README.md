@@ -25,12 +25,13 @@ npm run mac
   - ZhiGongNet_User_{NAME} : Hash Type
 ```json
 { 
-  name:"UserName", 
+  username:"UserName", 
   password:"UserPasswordWithSaltHash", 
   salt : "saltByTimeHash"
   createdTime:"2017-10-06 00:00:00", 
   email:"UserEmail@mail.com, 
   phone:"UserPhoneNumber", 
+  deposit : "",
   role :"admin/user"
 }
 ```
