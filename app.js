@@ -69,11 +69,9 @@ app.use(function(req,res,next){
 });
 
 Passport.serializeUser(function(user, done) {
-	console.log("here",user);
 	done(null, user);
 });
 Passport.deserializeUser(function(user, done) {
-	console.log("there",user);
 	done(null, user);
 });
 

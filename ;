@@ -12,65 +12,11 @@ var client = redis.createClient(config.redis.port,config.redis.ip,config.redis.o
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	var list = {};
-	var proxy = new events.EventEmitter();
-	proxy.setMaxListeners(0);	
-	var count = 0;
-	proxy.on("each",function(message,type,item,result) {
-		count = (message === "success") ? count+1:count;	
-		list[type]= (list.hasOwnProperty(type)) 
-				? list[type] 
-				: {};
-		list[type][item] = (list[type].hasOwnProperty(item)) 
-				? list[type][item]
-				: result;
-		if(message === "error") {
-  		if(req.session.passport){
-	  		res.render('index.ejs',{nameList:nameList,user:req.session.passport.user, videoList : list});
-  		}else{
-		 	 	res.render('index.ejs',{nameList:nameList,user:{username:"",role:""}, videoList:list});
-  		}
-		} 
-		if(count === total_length) {
-			console.log(list);
-  		if(req.session.passport){
-	  		res.render('index.ejs',{nameList:nameList,user:req.session.passport.user, videoList : list});
-  		}else{
-		 	 	res.render('index.ejs',{nameList:nameList,user:{username:"",role:""}, videoList:list});
-  		}
-		}
-	});
-	var total_length = 0;
-	Object.keys(nameList).forEach(function(i,e){
-		client.SMEMBERS(config.redis.keyHead+"_Category_"+i,function(err,result) {
-			if(err) { 
-				proxy.emit("each","error",i,err) ;
-			} else {
-				if(result.length > 0) {
-				total_length += result.length;
-				result.forEach(function(thisOne) {
-        	client.HGETALL(config.redis.keyHead+"_Video_"+thisOne,function(err,item){
-        	  if(err) {
-        	    console.log("[error] redis get video detail fail",err);
-        	    proxy.emit('each',"error");
-        	  } else {
-        	    proxy.emit("each","success",i,thisOne,item);
-        	  }
-        	});
-				});
-				}
-			}
-		});
-		
-	});
-
-
-
-//  if(req.session.passport){
-//	  res.render('index.ejs',{nameList:nameList,user:req.session.passport.user, videoList : list});
-//  }else{
-//	  res.render('index.ejs',{nameList:nameList,user:{username:"",role:""}, videoList:{}});
-//  }
+  if(req.session.passport){
+	  res.render('index.ejs',{nameList:nameList,user:req.session.passport.user});
+  }else{
+	  res.render('index.ejs',{nameList:nameList,user:{username:"",role:""}});
+  }
 });
 
 
@@ -118,36 +64,24 @@ router.get('/videoList/:type',function(req,res){
 	var proxy = new events.EventEmitter();
 	proxy.setMaxListeners(0);	
 	var count = 0;
-	var list = {};
-	proxy.on("detail",function(message,item,detail,each,len){
-		count = (message === "success") ? count+1 : count;	
-		list[item] = detail;
-		if(message === "error" ){
-			res.send({message:"error",data:"video list fail"});
-			proxy.removeListener("detail",function(){console.log("redis wrong");});
-		}
+	proxy.on("detail",function(item,each,len){
+
+	})
+	proxy.on("key",function(item,each,len) {
+		var list = {};
+		console.log(item,each,typeof(len));
+		client
+		count++;
 		if(count === len) {
-			proxy.removeListener("detail",function(){console.log("redis done");});
-			res.send({message:"success",data:list});
+			console.log("DONe");
 		}
 	});
 	client.SMEMBERS(config.redis.keyHead+"_Category_"+req.params.type,function(err,result){
-		if(err) {
-			res.send({message:"error",data:"video list fail"});
-		} else {
-			for(var i in result) {
-				client.HGETALL(config.redis.keyHead+"_Video_"+result[i],function(err,item){
-					if(err) {
-    	      console.log("[error] redis get video detail fail",err);
-    	      proxy.emit('detail',"error");		
-					} else {
-						console.log(result);
-						proxy.emit("detail","success",result[i],item,i,result.length);
-					}
-				});
-			}	
-		}
+		for(var i in result) {
+			proxy.emit('key',result[i],i,result.length);
+		}	
 	});
+	res.send({message:"success",data:req.param.type});
 });
 
 

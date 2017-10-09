@@ -33,13 +33,18 @@
           </ul>
         </li>
         <% if (user.role === "admin") { %>
-        <li><a href="#">管理后台</a></li>
+        <li><a href="#">管理后台</a>
+				<ul class="menu">
+					<li><a href="/userManagement">帳號管理</a></li>
+					<li><a href="/videoManagement">視頻管理</a></li>
+				</ul>
+				</li>
         <% } %>
       </ul>
     </div>
     <div class="top-bar-right">
       <ul class="dropdown vertical medium-horizontal menu" data-responsive-menu="drilldown medium-dropdown" data-auto-height="true" data-animate-height="true">
-      <% if(user==="") { %>
+      <% if(user.username==="") { %>
 		    <li><a href="/login"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img>Login</a></li>
       <% } else { %>
 		    <li><a href="/profile"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img><%= user.username %></a>
