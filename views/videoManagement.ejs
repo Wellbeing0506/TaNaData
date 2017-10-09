@@ -5,13 +5,6 @@
 	</head>
 	<body>
 <% include includes/topbar %>
-	<div class="callout primary">
-		<div class="row column">
-			<h1>智工网视频管理系统</h1>
-			<p class="lead">管理者添加、修改、删除视频</p>
-		</div>
-	</div>
-
 <ul class="tabs" data-responsive-accordion-tabs="tabs medium-accordion large-tabs" id="example-tabs">
 	<% for (var i in nameList) { %>
 		<% if(i === "ee") { %>
@@ -46,11 +39,10 @@
 					<tbody>
 					<% for(var j in videoList[i]) { %>
 						<tr>
-							<td><%= videoList[i][j].name %> </td>
+							<td><a href="/each/<%= i %>/<%= j %>"><%= videoList[i][j].name %></a></td>
 							<td><%= videoList[i][j].description %> </td>
 							<td><%= videoList[i][j].createdTime %> </td>
 							<td>
-								<input type="image" class="tiny primary" style="display: inline-block;height:30px;width:30px" src="/images/fi-page-edit.svg" onclick="editVideo('<%= i %>','<%= j %>','<%= videoList[i][j].name %>')" />
 								<input type="image" class="tiny primary" style="display: inline-block;height:30px;width:30px" src="/images/fi-page-delete.svg" onclick="confirmRemoveVideo('<%= i %>','<%= j %>', '<%= videoList[i][j].name %>')" />
 							</td>
 						</tr>	
@@ -59,7 +51,7 @@
 				</table>
 			</div>
 		<% } else {%>
-    	<p> No Video font in <%= nameList[i] %> ...</p>
+    	<p> <%= nameList[i] %> 没有找到视频...</p>
 		<% } %>
   </div>
 	<% } %>
@@ -126,10 +118,11 @@
 			type : "POST",
 			data : {removeType : removeType, removeVideo : removeVideo},
 			success : function(data){
-				console.log(data);
+		    $("#cr").foundation('close');
+        window.location.reload(true);
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) { 
-				$("#dataVideo"+type).foundation('close');
+		    $("#cr").foundation('close');
 				alert("Status: " + textStatus,"Error"+errorThrown);
 			}
 		});
@@ -153,10 +146,11 @@
 			type: "POST",
 			data : myPost,
 			success : function(data) {
-				$("#addVideo"+type).foundation('close');
+				$("#addVideo").foundation('close');
+        window.location.reload(true);
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) { 
-				$("#dataVideo"+type).foundation('reveal','close');
+				$("#dataVideo").foundation('close');
 				alert("Status: " + textStatus,"Error"+errorThrown);
 			}
 		});
