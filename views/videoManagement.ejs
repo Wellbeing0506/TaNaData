@@ -31,15 +31,59 @@
 		<% } else { %>
   		<div class="tabs-panel" id="panel<%= i %>">
 		<% } %>
-    <h3><%= nameList[i] %>&nbsp&nbsp&nbsp<input type="image" data-open="addVideo<%= i %>" class=" alert" style="display: inline-block;height:20px;width:20px" src="/images/fi-page-add.svg"/></h3>
-    <p> Some Videos about <%= nameList[i] %> ...</p>
+    <h3><%= nameList[i] %>&nbsp&nbsp&nbsp<input type="image" onclick="preAddVideo('<%= i %>','<%= nameList[i] %>')" class=" alert" style="display: inline-block;height:20px;width:20px" src="/images/fi-page-add.svg"/></h3>
+		<% if(videoList[i]) { %> 
+			<div class="table-scroll">
+				<table class="hover">
+					<thead>
+						<tr>
+							<th> Name </th>
+							<th> Description </th>
+							<th> Created Time </th>
+							<th> Operation </th>
+						</tr>
+					</thead>
+					<tbody>
+					<% for(var j in videoList[i]) { %>
+						<tr>
+							<td><%= videoList[i][j].name %> </td>
+							<td><%= videoList[i][j].description %> </td>
+							<td><%= videoList[i][j].createdTime %> </td>
+							<td>
+								<input type="image" class="tiny primary" style="display: inline-block;height:30px;width:30px" src="/images/fi-page-edit.svg" onclick="editVideo('<%= i %>','<%= j %>','<%= videoList[i][j].name %>')" />
+								<input type="image" class="tiny primary" style="display: inline-block;height:30px;width:30px" src="/images/fi-page-delete.svg" onclick="confirmRemoveVideo('<%= i %>','<%= j %>', '<%= videoList[i][j].name %>')" />
+							</td>
+						</tr>	
+					<% } %>
+					</tbody>
+				</table>
+			</div>
+		<% } else {%>
+    	<p> No Video font in <%= nameList[i] %> ...</p>
+		<% } %>
   </div>
 	<% } %>
 </div>
 
-<% for (var i in nameList) { %>
-<div class="reveal small" id="addVideo<%= i %>" data-reveal>
-	<h1>新增视频-<%= nameList[i] %></h1>
+<div class="reveal small" id="cr" data-reveal>
+	<h1> 是否确认删除 </h1>
+	<hr>
+	<div class="form-group">
+		<lable>视频类别:</label><lable id="targetType"></lable>
+	</div>
+	<div class="form-group">
+		<lable>视频名称:</label><lable id="targetName"></lable>
+	</div>
+		<input type="hidden" id="targetVideo">
+	<button onclick="rmVideo()" class="alert button expanded">删除</button>
+
+	<button class="close-button" data-close aria-label="Close modal" type="button">
+		<span aria-hidden="true">&times;</span>
+	</button>
+</div>
+
+<div class="reveal small" id="addVideo" data-reveal>
+	<h1 id="addVideoTitle">新增视频</h1>
 	<hr>
 	<div class="form-group">
 		<label>视频网址</label>
@@ -53,31 +97,66 @@
 		<label>视频说明</label>
 		<textarea class="form-control" name="videoDescription" id="videoDescription"></textarea>
 	</div>
-		<button onclick='addNewVideo("<%= i %>")' class="button expanded">新增</button>
+		<button onclick='addNewVideo()' class="button expanded">新增</button>
 		<button class="close-button" data-close aria-label="Close modal" type="button">
 			<span aria-hidden="true">&times;</span>
 		</button>
 </div>
-<% } %>
 
 
 <script>
-	function addNewVideo(type) {
+	var removeVideo = "";
+	var removeType = "";
+	var removeName = "";
+	var addType = "";
+	
+	function confirmRemoveVideo(type,video,name) {
+		removeVideo = video;	
+		removeType = type;
+		removeName = name;
+		$("#targetType").text(removeType);
+		$("#targetName").text(removeName);
+		$("#targetVideo").text(removeVideo);
+		$("#cr").foundation('open');
+	}
+	function rmVideo() {
+		if(removeType && removeVideo) {
+		$.ajax({
+			url : "/videoDelete",
+			type : "POST",
+			data : {removeType : removeType, removeVideo : removeVideo},
+			success : function(data){
+				console.log(data);
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) { 
+				$("#dataVideo"+type).foundation('close');
+				alert("Status: " + textStatus,"Error"+errorThrown);
+			}
+		});
+		} else {
+				alert("Status: Something Wrong!!!" );
+		}
+	}
+	function preAddVideo(type,name){
+		addType = type;
+		$("#addVideoTitle").text("新增视频-"+name);
+		$("#addVideo").foundation('open');	
+	}
+	function addNewVideo() {
 		var videoURL = $("#videoURL").val(); 
 		var videoName = $("#videoName").val(); 
 		var videoDescription = $("#videoDescription").val(); 
 		var thisUser = <%- JSON.stringify(user) %>
-		console.log(thisUser);
-		var myPost = {videoURL : videoURL, videoName : videoName, videoDescription : videoDescription, type:type , thisUser:JSON.stringify(thisUser)};
-		console.log(myPost);
+		var myPost = {videoURL : videoURL, videoName : videoName, videoDescription : videoDescription, type:addType , thisUser:JSON.stringify(thisUser)};
 		$.ajax({
 			url : "/videoAdd",
 			type: "POST",
 			data : myPost,
 			success : function(data) {
-				console.log(data);
+				$("#addVideo"+type).foundation('close');
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) { 
+				$("#dataVideo"+type).foundation('reveal','close');
 				alert("Status: " + textStatus,"Error"+errorThrown);
 			}
 		});

@@ -10,28 +10,65 @@ var Config = require('../config/sysConfig'),
 var redis = require('redis');
 var client = redis.createClient(config.redis.port,config.redis.ip,config.redis.option);
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
+
+/* remove Video */
+router.post("/videoDelete",function(req,res){
+	console.log(req.body);
+	client.SREM(config.redis.keyHead+"_Category_"+req.body.removeType,req.body.removeVideo,function(err,result){
+		client.DEL(config.redis.keyHead+"_Video_"+req.body.removeVideo,function(err1,result1){
+			res.send({message:"success",data:req.body,result:result,result1,result1});
+		});
+	});
+});
+
+/* page for each category */
+router.get("/page/:type",function(req,res){
 	var list = {};
 	var proxy = new events.EventEmitter();
 	proxy.setMaxListeners(0);	
 	var count = 0;
-	proxy.on("each",function(message,type,item,result) {
-		count = (message === "success") ? count+1:count;	
-		list[type]= (list.hasOwnProperty(type)) 
-				? list[type] 
-				: {};
-		list[type][item] = (list[type].hasOwnProperty(item)) 
-				? list[type][item]
-				: result;
-		if(message === "error") {
-  		if(req.session.passport){
-	  		res.render('index.ejs',{nameList:nameList,user:req.session.passport.user, videoList : list});
-  		}else{
-		 	 	res.render('index.ejs',{nameList:nameList,user:{username:"",role:""}, videoList:list});
-  		}
-		} 
-		if(count === total_length) {
+	proxy.on("each",function(message,type,item,length) {
+		count = (message === "success") ? count+1 : count;	
+		if(count === length) {
+		res.render('page.ejs',{nameList:nameList,user:{username:"",role:""}, videoList:list});
+		}
+	});
+			
+	client.SMEMBERS(config.redis.keyHead+"_Category_"+req.params.type,function(err,result) {
+		if(err) { 
+			console.log("error",err);
+			proxy.emit("each","error");
+		} else {
+			if(result.length > 0) {
+			result.forEach(function(thisOne) {
+      	client.HGETALL(config.redis.keyHead+"_Video_"+thisOne,function(err,item){
+      	  if(err) {
+      	    console.log("[error] redis get video detail fail",err);
+      	    proxy.emit('each',"error");
+      	  } else {
+      	    proxy.emit("each","success",i,thisOne,item,result.length);
+      	  }
+      	});
+			});
+			}else {
+				proxy.emit("final","zero");
+			}
+		}
+	});
+});
+
+/* GET home page. */
+router.get('/', function(req, res) {
+	var list = {};
+	var proxy = new events.EventEmitter();
+	proxy.setMaxListeners(0);	
+	var count = 0;
+	var zero_count = 0;
+	var final_count = 0;
+	proxy.on("final",function(message){
+		final_count++;	
+			console.log(final_count,Object.keys(nameList));
+		if( final_count> 1 && final_count === Object.keys(nameList).length) {
 			console.log(list);
   		if(req.session.passport){
 	  		res.render('index.ejs',{nameList:nameList,user:req.session.passport.user, videoList : list});
@@ -40,7 +77,24 @@ router.get('/', function(req, res, next) {
   		}
 		}
 	});
+	proxy.on("each",function(message,type,item,result) {
+		console.log("each",message,type,item,result);
+		count = (message === "success") ? count+1:count;	
+		zero_count = (message === "zero") ? zero_count+1:zero_count;	
+		list[type]= (list.hasOwnProperty(type)) 
+				? list[type] 
+				: {};
+		list[type][item] = (list[type].hasOwnProperty(item)) 
+				? list[type][item]
+				: result;
+		if(message === "error") {
+			proxy.emit("final","error");
+  	}else {
+			proxy.emit("final","OK");
+		}
+	});
 	var total_length = 0;
+	var zero_length = 0;
 	Object.keys(nameList).forEach(function(i,e){
 		client.SMEMBERS(config.redis.keyHead+"_Category_"+i,function(err,result) {
 			if(err) { 
@@ -58,24 +112,18 @@ router.get('/', function(req, res, next) {
         	  }
         	});
 				});
+				}else {
+							zero_length++;
+        	    proxy.emit("each","zero");
 				}
 			}
 		});
-		
 	});
-
-
-
-//  if(req.session.passport){
-//	  res.render('index.ejs',{nameList:nameList,user:req.session.passport.user, videoList : list});
-//  }else{
-//	  res.render('index.ejs',{nameList:nameList,user:{username:"",role:""}, videoList:{}});
-//  }
 });
 
 
 /* login page */
-router.get('/login',function(req,res,next) {
+router.get('/login',function(req,res) {
       res.render('login.ejs',{message:req.flash('LoginMessage'),nameList:nameList,user:{username:"",role:""}});
 });
 router.post('/login',
@@ -109,8 +157,67 @@ router.get('/logout',function(req,res){
 
 /* video management */ 
 router.get('/videoManagement',isLoggedIn,function(req,res){
-	var user = req.user;
-	res.render('videoManagement',{nameList:nameList,user:user});
+	var list = {};
+	var proxy = new events.EventEmitter();
+	proxy.setMaxListeners(0);	
+	var count = 0;
+	var zero_count = 0;
+	var final_count = 0;
+	proxy.on("final",function(message){
+		final_count++;	
+			console.log(final_count,Object.keys(nameList));
+		if( final_count> 1 && final_count === Object.keys(nameList).length) {
+			console.log(list);
+  		if(req.session.passport){
+	  		res.render('videoManagement.ejs',{nameList:nameList,user:req.session.passport.user, videoList : list});
+  		}else{
+		 	 	res.render('videomanagement.ejs',{nameList:nameList,user:{username:"",role:""}, videoList:list});
+  		}
+		}
+	});
+	proxy.on("each",function(message,type,item,result) {
+		console.log("each",message,type,item,result);
+		count = (message === "success") ? count+1:count;	
+		zero_count = (message === "zero") ? zero_count+1:zero_count;	
+		list[type]= (list.hasOwnProperty(type)) 
+				? list[type] 
+				: {};
+		list[type][item] = (list[type].hasOwnProperty(item)) 
+				? list[type][item]
+				: result;
+		if(message === "error") {
+			proxy.emit("final","error");
+  	}else {
+			proxy.emit("final","OK");
+		}
+	});
+	var total_length = 0;
+	var zero_length = 0;
+	Object.keys(nameList).forEach(function(i,e){
+		client.SMEMBERS(config.redis.keyHead+"_Category_"+i,function(err,result) {
+			if(err) { 
+				proxy.emit("each","error",i,err) ;
+			} else {
+				if(result.length > 0) {
+				total_length += result.length;
+				result.forEach(function(thisOne) {
+        	client.HGETALL(config.redis.keyHead+"_Video_"+thisOne,function(err,item){
+        	  if(err) {
+        	    console.log("[error] redis get video detail fail",err);
+        	    proxy.emit('each',"error");
+        	  } else {
+        	    proxy.emit("each","success",i,thisOne,item);
+        	  }
+        	});
+				});
+				}else {
+							zero_length++;
+        	    proxy.emit("each","zero");
+				}
+			}
+		});
+	});
+
 });
 
 /* vidoe list */
@@ -159,7 +266,7 @@ router.post('/videoAdd',function(req,res){
 	var now=moment().format('YYYY-MM-DD h:mm:ss');
 	var thisUser = JSON.parse(req.body.thisUser);
 	if(thisUser.role === "admin") {
-		var regular = /id_(\S{13})NA/;
+		var regular = /id_(\S{15})==/;
 		var test = regular.test(req.body.videoURL);
 		var id = regular.exec(req.body.videoURL);
 		if(regular.test(req.body.videoURL)){
