@@ -10,14 +10,11 @@ var Config = require('../config/sysConfig'),
 var redis = require('redis');
 var client = redis.createClient(config.redis.port,config.redis.ip,config.redis.option);
 
-const url = require('url');
-
 var list = {};
 router.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   next();
 });
-
 
 /* remove Video */
 router.post("/videoDelete",function(req,res){
@@ -190,11 +187,30 @@ router.get('/profile',isLoggedIn,function(req,res){
 	});
 });
 router.post('/updateProfile',function(req,res){
-	console.log(req.body);
-	client.hmset(config.redis.keyHead+"_User_"+req.body.username,["email",req.body.email,"phone",req.body.phone],function(err,result){
-		console.log(result,err);
-		res.send({message:"success",data:"ok"});	
+	var phone = req.body.phone;
+	var email = req.body.email;
+	var username = req.body.username;
+	client.HMSET(config.redis.keyHead+"_User_"+username,"phone",phone,"email",email,function(err,result){
+		if(err){
+			console.log("update Profile",err);
+		}
 	});
+});
+
+/* message */
+router.post('/message',function(req,res){
+	console.log(req.body);
+	var now=moment().format('YYYY-MM-DD h:mm:ss');
+	req.body["time"] = now;
+	client.LPUSH(config.redis.keyHead+"_Message",JSON.stringify(req.body),function(err,result){
+		if(err) {
+		console.log("message fail",err);
+		res.send({message:"fail",data:err});
+
+		} else {
+		res.send({message:"success",data:"OK"});
+		}
+	});	
 });
 
 /* logout */ 

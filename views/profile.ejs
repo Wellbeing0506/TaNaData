@@ -38,7 +38,7 @@
 		$.ajax({
 			url : "/updateProfile",
 			type : "POST",
-			data : {useranme : username,email:email,phone:phone},
+			data : {username : username,email:email,phone:phone},
 			success : function(data) {
 				window.location.reload(true);
 			}, 
