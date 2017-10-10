@@ -45,11 +45,11 @@
     <div class="top-bar-right">
       <ul class="dropdown vertical medium-horizontal menu" data-responsive-menu="drilldown medium-dropdown" data-auto-height="true" data-animate-height="true">
       <% if(user.username==="") { %>
-		    <li><a href="/login"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img>Login</a></li>
+		    <li><a href="/login"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img>登入</a></li>
       <% } else { %>
 		    <li><a href="/profile"><img class="svg" src="/images/fi-torso.svg" style="height:25px;width:25px"></img><%= user.username %></a>
          <ul class="menu">
-          <li><a href="/logout"><img src="/images/exit.png" style="height:25px;width:25px"></img>Logout</a></li>
+          <li><a href="/logout"><img src="/images/exit.png" style="height:25px;width:25px"></img>登出</a></li>
         </ul>
         </li>
       <% } %>

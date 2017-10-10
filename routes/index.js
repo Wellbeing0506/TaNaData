@@ -84,7 +84,6 @@ router.get("/page/:type",function(req,res){
       	});
 			});
 			}else {
-        console.log("zero");
 				proxy.emit("each","zero");
 			}
 		}
