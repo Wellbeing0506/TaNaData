@@ -179,6 +179,24 @@ router.get('/captcha.png',function(req,res){
 	res.end(imgbase64);
 });
 
+/* profile */
+router.get('/profile',isLoggedIn,function(req,res){
+	client.HGETALL(config.redis.keyHead+"_User_"+req.session.passport.user.username,function(err,result){
+		if(err) {
+			res.render('profile.ejs',{nameList:nameList,user:req.session.passport.user,userList:{}});
+		} else {
+			res.render('profile.ejs',{nameList:nameList,user:req.session.passport.user,userList:result});
+		}
+	});
+});
+router.post('/updateProfile',function(req,res){
+	console.log(req.body);
+	client.hmset(config.redis.keyHead+"_User_"+req.body.username,["email",req.body.email,"phone",req.body.phone],function(err,result){
+		console.log(result,err);
+		res.send({message:"success",data:"ok"});	
+	});
+});
+
 /* logout */ 
 router.get('/logout',function(req,res){
   req.logout();
